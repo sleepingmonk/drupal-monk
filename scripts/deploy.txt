@@ -1,0 +1,11 @@
+#Files to include for deployment to the environment in a build artifact.
+#rsync -KPar --delete --force --files-from=[path to THIS file] [working repo] [deployment repo]
+
+scripts/composer
+vendor
+web
+drush
+composer.json
+composer.lock
+pantheon.yml
+README.md

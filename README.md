@@ -1,91 +1,77 @@
 # Composer template for Drupal projects
 
-[![Build Status](https://travis-ci.org/drupal-composer/drupal-project.svg?branch=8.x)](https://travis-ci.org/drupal-composer/drupal-project)
+## Local Development
 
-This project template should provide a kickstart for managing your site
-dependencies with [Composer](https://getcomposer.org/).
+For local development, please remember the following:
+* Make sure `web/sites/default/services.local.yml` is in place. (see `mw copy`)
+* Make sure `web/sites/default/settings.local.php` is in place. (see `mw copy`)
+* Make sure `web/sites/default/settings.php` includes settings.local.php.
+* Import your database. `mw dbi`
+* Config Import and Clear Caches. `mw local-dev`
 
-If you want to know how to use it as replacement for
-[Drush Make](https://github.com/drush-ops/drush/blob/8.x/docs/make.md) visit
-the [Documentation on drupal.org](https://www.drupal.org/node/2471553).
+## Setup
 
-## Usage
+* `git fetch && git checkout master` Checkout the current master branch (default is develop)
+* `docker-compose up -d` from the project root.
+* `mw copy settings [path to src/sites/default/]` Copy default local settings. Edit if needed.
+* Copy the database dump (Should be pinned to project slack channel) to `[project]/data/master.sql`
+  Make sure it's extracted and not .zip or .gz
+* `mw composer . install` Build the project for local development.
+* `mw dbi data/master.sql` Install the database file.
+* `mw local-dev` Run local dev setup, including drush updb, cim, enable devel modules, generate login link.
 
-First you need to [install composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx).
+If you run into any problems with the build ping @calvin in slack.
 
-> Note: The instructions below refer to the [global composer installation](https://getcomposer.org/doc/00-intro.md#globally).
-You might need to replace `composer` with `php composer.phar` (or similar) 
-for your setup.
+## Development
 
-After that you can create the project:
+ - Move ticket to "in progress".
+ - Make a `feature/[ticket-id]--short-description` branch from `master`.
+ - Use composer (through Monkey Wrench), to install drupal modules.
+    - `mw composer . require drupal/[module] --no-update` (adds to composer.json without updating all other modules)
+    - `mw composer . update drupal/[module]` (installs/updates only the specified module, leaving composer.lock pretty clean)
+ - Use Drupal Console (through Monkey Wrench), to scaffold modules, etc.
+    - `mw drupal generate:module` (`mw drupal` is a work in progress. If it doesn't work ping Calvin.)
 
-```
-composer create-project drupal-composer/drupal-project:8.x-dev some-dir --stability dev --no-interaction
-```
+*Any configuration changes should be managed with `mw drush cex` and `mw drush cim`*
 
-With `composer require ...` you can download new dependencies to your 
-installation.
+## Workflow
 
-```
-cd some-dir
-composer require drupal/devel:~1.0
-```
+* Pull Request: `feature/123` -> `develop`
+* Dev test on develop environment.
+* Pull Request: `feature/123` -> `staging/staging-x.y.z`
+* User Acceptance Test on stage environment.
+* Deploy feature release to master (production) after UAT sign off.
 
-The `composer create-project` command passes ownership of all files to the 
-project that is created. You should create a new git repository, and commit 
-all files not excluded by the .gitignore file.
+For more info see workflow documentation.
+[https://drive.google.com/drive/u/0/folders/0B7ReslZJkgRZNzdHQ0xMd1VCNTQ](https://drive.google.com/drive/u/0/folders/0B7ReslZJkgRZNzdHQ0xMd1VCNTQ)
 
-## What does the template do?
+## Deploy
 
-When installing the given `composer.json` some tasks are taken care of:
+`mw deploy` for more info.
+This project deploy is set up for Monkey Wrench `v2.0`.
+`mw version` to check version.
+`mw update-mw` to fetch the latest.
+`mw version-set` to set based on project need.
 
-* Drupal will be installed in the `web`-directory.
-* Autoloader is implemented to use the generated composer autoloader in `vendor/autoload.php`,
-  instead of the one provided by Drupal (`web/vendor/autoload.php`).
-* Modules (packages of type `drupal-module`) will be placed in `web/modules/contrib/`
-* Theme (packages of type `drupal-theme`) will be placed in `web/themes/contrib/`
-* Profiles (packages of type `drupal-profile`) will be placed in `web/profiles/contrib/`
-* Creates default writable versions of `settings.php` and `services.yml`.
-* Creates `web/sites/default/files`-directory.
-* Latest version of drush is installed locally for use at `vendor/bin/drush`.
-* Latest version of DrupalConsole is installed locally for use at `vendor/bin/drupal`.
+### If `mw update-mw` fails:
 
-## Updating Drupal Core
+You will need to manually pull the latest monkey-wrench.
 
-This project will attempt to keep all of your Drupal Core files up-to-date; the 
-project [drupal-composer/drupal-scaffold](https://github.com/drupal-composer/drupal-scaffold) 
-is used to ensure that your scaffold files are updated every time drupal/core is 
-updated. If you customize any of the "scaffolding" files (commonly .htaccess), 
-you may need to merge conflicts if any of your modified files are updated in a 
-new release of Drupal core.
+`cd` to the dir you cloned monkey-wrench to `git checkout master` then `git pull origin master`.
+_If you don't know where that is, check your path or your aliases or search for `monkey-wrench`._
 
-Follow the steps below to update your core files.
+### If you have the latest Monkey Wrench and deploy fails:
 
-1. Run `composer update drupal/core --with-dependencies` to update Drupal Core and its dependencies.
-1. Run `git diff` to determine if any of the scaffolding files have changed. 
-   Review the files for any changes and restore any customizations to 
-  `.htaccess` or `robots.txt`.
-1. Commit everything all together in a single commit, so `web` will remain in
-   sync with the `core` when checking out branches or running `git bisect`.
-1. In the event that there are non-trivial conflicts in step 2, you may wish 
-   to perform these steps on a branch, and use `git merge` to combine the 
-   updated core files with your customized files. This facilitates the use 
-   of a [three-way merge tool such as kdiff3](http://www.gitshah.com/2010/12/how-to-setup-kdiff-as-diff-tool-for-git.html). This setup is not necessary if your changes are simple; 
-   keeping all of your modifications at the beginning or end of the file is a 
-   good strategy to keep merges easy.
+Set the Monkey Wrench version to the required version `mw version-set [version]`.
+If that works, It is strongly recommended you reconfigure this project to deploy using the latest methods.
 
-## Generate composer.json from existing project
-
-With using [the "Composer Generate" drush extension](https://www.drupal.org/project/composer_generate)
-you can now generate a basic `composer.json` file from an existing project. Note
-that the generated `composer.json` might differ from this project's file.
-
+If it still does not work, troubleshoot the best you can and ask for help on slack.
 
 ## FAQ
 
 ### Should I commit the contrib modules I download?
 
-Composer recommends **no**. They provide [argumentation against but also 
+Composer recommends **no**. They provide [argumentation against but also
 workrounds if a project decides to do it anyway](https://getcomposer.org/doc/faqs/should-i-commit-the-dependencies-in-my-vendor-directory.md).
 
 ### Should I commit the scaffolding files?
@@ -111,17 +97,17 @@ achieve that by registering `@drupal-scaffold` as post-install and post-update c
 ```
 ### How can I apply patches to downloaded modules?
 
-If you need to apply patches (depending on the project being modified, a pull 
-request is often a better solution), you can do so with the 
+If you need to apply patches (depending on the project being modified, a pull
+request is often a better solution), you can do so with the
 [composer-patches](https://github.com/cweagans/composer-patches) plugin.
 
-To add a patch to drupal module foobar insert the patches section in the extra 
+To add a patch to drupal module foobar insert the patches section in the extra
 section of composer.json:
 ```json
 "extra": {
     "patches": {
         "drupal/foobar": {
-            "Patch description": "URL or local path to patch"
+            "Patch description": "URL to patch"
         }
     }
 }

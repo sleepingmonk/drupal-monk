@@ -1,0 +1,268 @@
+#!/bin/bash
+
+# This is a configuration file for deployments with Monkey Wrench.
+#
+# This should be configured by a project lead and committed to the development
+# repo.  After that, anyone should be able to deploy to any environment with
+# simple commands. i.e.  mw deploy devlop
+#
+# It's possible to really customize the deployment process per project but the
+# main variables are at the end of this file.
+# (In bash, functions need to appear before they're called.
+#   Feel free to jump to the end to set the basic variables.)
+#
+# --- 2 Example Scenarios ---
+#
+# 1 - One repo for development and deployment using git, everything committed.
+#
+# sync_target=false    (There's no sync so no target or list file.)
+# sync_list=false
+# sync_command=(       (All environments push with git.)
+#   develop::git
+#   stage::git
+#   master::git
+# )
+# Everything else is optional. In fact, this is default behavior and this file
+# can be deleted.
+#
+# 2 - Two separate repos for development and deployment. To avoid committing
+# dependencies and build aritifacts in the development repo. Still pushing
+# with git to host.
+#
+# sync_target=../_deploy   (The relative path to your cloned deployment repo.)
+# sync_list=deploy.txt     (A line separated list of files to sync to target.)
+#
+# sync_command=(      (Develop and stage pushes with git.)
+#   develop::git
+#   stage::git
+#   master::git_ftp   (Master with git ftp need secrets.json in data/private/).
+# )
+#
+# 3 - BONUS Example - Sync files directly to external host. One repo, but
+# file used to specify what files to sync to host, omitting dev files.
+#
+# sync_target=external     (Indicates not a local sync.)
+# sync_list=deploy.txt     (A line separated list of files to sync to host.)
+#
+# sync_command=(       (Develop and stage pushes with git to pantheon sandbox.)
+#   develop::git
+#   stage::git
+#   master::sync_host  (Custom sync function defined in this file.)
+# )
+#
+# --- ---
+#
+# This is similar to a drupal settings.php but controls mw deploy.
+# The functions defined below are examples and may not be needed for your
+# project. See additional descriptions with each function.
+#
+# This file will be included in the flow of deployment, so settings here will
+# affect outcomes there. See monkey-wrench/scripts/utilities/deploy for info.
+#
+# Available Variables:
+#
+# $DIR : string - The directory where mw deploy command was run.
+# $MW_DIR : string - The directory where mw is installed.
+#
+# $version : string - The staging version specified for stage and master deployments.
+# $build : string - The build command if it was triggered.
+# $push_tags : bool - Set to true if tags are set and should be pushed.
+# $passed_opts : array - The additional options passed to build script, if any.
+# $deploy_branch : string - The branch to deploy.
+#
+# Reserved funciton names:
+#
+# prompt_yes_no(): You can use this function!
+#   if prompt_yes_no "Yes or now question?" ; then
+#     # Do the yes thing.
+#   else
+#     # Do the no thing.
+#   fi
+# tag_release(): Reserved - for tagging master with a version id for release.
+# origin_checkout(): Reserved - Checks out the correct origin branch.
+# git_ftp(): Reserved - for syncing with git ftp. See sync_command below.
+
+
+# Function for adding control tags to release commits.
+#
+# i.e Pantheon uses pantheon_live_N to tag their "live" commits. If pantheon is
+# your host for production/live you need to tag your master branch release with
+# the next incremented value of the pantheon_live_N tag.
+# If you're using the Cheeky git branching strategy (wunderflow) with pantheon
+# you do NOT need to add panthoen_test_N tags to the stage commits.
+#
+# NOTE: If you do add a tag here, set push_tags=true so they'll get pushed.
+
+# tag_commit() {
+#   case $deploy_branch in
+#     develop )
+#       # Tag for develop.
+#       ;;
+#     stage )
+#       # Tag for stage.
+#       ;;
+#     master )
+#       # Tag for master.
+#       # Get latest pantheon_live_ tag.
+#       git fetch host --tags
+#       pantheon_prefix='pantheon_live_'
+#       pantheon_current=$(git tag -l --sort=v:refname $pantheon_prefix* | tail -1)
+#       pantheon_id=${pantheon_current#${pantheon_prefix}}
+#       pantheon_new=$(($pantheon_id+1))
+#       echo
+#       echo "Current pantheon live tag is $pantheon_current"
+#       echo "The new one would be $pantheon_prefix$pantheon_new"
+#       if prompt_yes_no "Add new pantheon live tag?" ; then
+#         echo
+#         echo "Tagging"
+#         git tag -a $pantheon_prefix$pantheon_new -m "Tagging new pantheon live release."
+#         push_tags=true
+#       else
+#         echo
+#         echo "Skipping"
+#       fi
+#       ;;
+#   esac
+# }
+
+# Function for syncing files to your environments without git.
+#
+# SFTP, rsync, git FTP, etc.
+# Set credentials as variables in sync_secrets bash file in a non-committed directory like data/private/.
+# Do NOT put this information in THIS deploy file. This file gets committed to the repo.
+#
+# Example:
+# #!/bin/bash/
+# $host=
+# $username=
+# $pass=
+# $directory=
+
+# sync_host() {
+# # Include sync_secrets like this.
+# . $DIR/data/private/sync_secrets
+#
+#   case $deploy_branch in
+#     develop )
+#       # Sync to develop env.
+#       ;;
+#     stage )
+#       # Sync to stage env.
+#       ;;
+#     master )
+#       # Sync to master env.
+
+#       # EXAMPLE
+#       # sync_secrets just defines variables for username, host, pass etc.
+#       # It should live in <project>/data/private/ directory or some other private directory that is not committed to repo.
+#       # The . in front of the path means it will include it in this shell so it has access to global variables.
+#       # <<SFTP is a Heredoc https://en.wikipedia.org/wiki/Here_document to attach the ftp commands inline.
+
+#       . $DIR/data/private/sync_secrets
+#       sftp -o Port=2222 develop.231d6c1d-e370-4089-bd6a-e9645d713af8@appserver.develop.231d6c1d-e370-4089-bd6a-e9645d713af8.drush.in:code <<SFTP
+# put -r $DIR/_deploy
+# quit
+# SFTP
+#       ;;
+#   esac
+# }
+
+# Function for post deploy tasks like updb, cim, cr, etc.
+# Use 'case' with $deploy_branch if you have different actions per branch.
+# Example below uses terminus for pantheon but you could use drush alias
+# or whatever you need.
+
+post_deploy() {
+  # # Set this with the pantheon site "Name". SEE: terminus site:list
+  # site=[pantheon site name]
+  # if [[ $deploy_branch == "master" ]] ; then
+  #   env_branch=dev
+  # else
+  #   env_branch=$deploy_branch
+  # fi
+  # echo
+  # echo "Doing the dishes."
+  # echo
+  # # Using terminus to run drush on the host. Could use drush aliases elsewhere.
+  # echo "updb"
+  # terminus remote:drush $site.$env_branch updb
+  # echo
+  # echo "cim"
+  # terminus remote:drush $site.$env_branch cim -y
+  # echo
+  # echo "cr"
+  # terminus remote:drush $site.$env_branch cr
+  # echo
+  # echo "uli"
+  # terminus remote:drush $site.$env_branch uli
+}
+
+# Sync target: [<directory> | external | false].
+#
+# Directory: used for separate build/deploy repos. Production files from the
+# development repo should be synced to the deployment repo. The system will
+# git commit and push changes to the host.
+#
+# External: used when syncing files directly to host, without git.
+#
+# False: used when there is no deployment repo or build steps and we can git
+# push or sync our development repo directly to the host.
+# i.e Bitbucket and Host use same repo.
+# This is highly discouraged as it would mean dependencies, core and contribs
+# are committed to the development repo.
+sync_target=../deploy
+# The file name containing a line separated list of files/dirs to sync.
+# Sync file should live in the data directory beside scripts file.
+sync_list=deploy.txt
+
+# Add control tags to a git repo if required by the production environment.
+#
+# i.e Pantheon uses pantheon_live_N to tag their "live" commits. If pantheon is
+# your host for production/live you need to tag your master branch release with
+# the next incremented value of the pantheon_live_N tag.
+#
+# [false | function_name] : function defined above i.e tag_commit
+#
+# NOTE: bash version < 4 does not support associative arrays. We'll do a split
+# on :: instead for better compatability.  KEY::VALUE
+tag_control=(
+  develop::false
+  stage::false
+  master::false
+)
+
+# Sync commands for each environment. [git | git_ftp | <function_name>]
+#
+# Git: will do a standard git push.  Assumes your repos are set up correctly.
+# This is the ideal method but sometimes our production environment doesn't
+# support it. Request that clients get git support on their servers!
+#
+# Git FTP: uses git ftp (plugin for git), to sync repo changes via ftp.
+# A compromise that uses a git plug in to sync files over ftp.
+# PRO: ftp is ubiquitous and this plugin syncs only the changed files so it's
+# faster than ftp transfer of the whole project directory.
+# CON: You need to install a git plug in.
+# CON: No on server version control so if something changes there we have no
+# easy way to tell, or to roll back in case of a hack, for example.
+# It is HIGHLY recommended we push for git on server if client does not
+# currently support it.
+#
+# Function: uses a custom sync function you define at the top of this file.
+# This is a last resort for when git and git ftp are not an option. Define a
+# sync function that uses whatever technology is available. i.e scp, rsync, ftp.
+#
+# When using Pantheon sandbox accounts for development, set develop and stage to
+# "git", Set master to whatever is appropriate for the production environment.
+#
+# Git commands will push to remote origin when using a build/deploy repo or
+# remote host when pushing to the host directly from the development repo. If
+# your production environement needs to define a different remote to push to,
+# you must use a custom sync command.
+#
+# NOTE: bash version < 4 does not support associative arrays. We'll do a split
+# on :: instead for better compatability.  KEY::VALUE
+sync_command=(
+  develop::git
+  stage::git
+  master::git
+)
