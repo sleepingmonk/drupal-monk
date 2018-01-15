@@ -92,13 +92,13 @@ if $clean ; then
 
   echo
   echo "Removing dependencies, core and contrib for rebuild..."
-  rm -rf /drush/contrib/ \
-    /vendor/ \
-    /web/core/ \
-    /web/modules/contrib/ \
-    /web/themes/contrib/ \
-    /web/profiles/contrib/ \
-    /web/libraries/
+  rm -rf drush/contrib/ \
+    vendor/ \
+    web/core/ \
+    web/modules/contrib/ \
+    web/themes/contrib/ \
+    web/profiles/contrib/ \
+    web/libraries/
 fi
 
 # Run composer install.
