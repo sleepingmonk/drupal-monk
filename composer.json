@@ -71,9 +71,12 @@
         "pre-update-cmd": [
             "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
         ],
+        "post-create-project-install": [
+            "DrupalProject\\composer\\ScriptHandler::postInstall"
+        ],
         "post-install-cmd": [
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
-            "DrupalProject\\composer\\ScriptHandler::dockerUp"
+            "DrupalProject\\composer\\ScriptHandler::postInstall"
         ],
         "post-update-cmd": [
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
