@@ -97,4 +97,21 @@ class ScriptHandler {
     }
   }
 
+  /**
+   * Post install tasks.
+   * @param  Event  $event
+   *  Composer script event.
+   */
+  public static function postInstall(Event $event) {
+    echo "
+SUCCESS!  You have installed your Drupal 8 Project!
+
+See README.md for important information.
+
+Spinning up docker containers.
+";
+    // Spin up docker containers.
+    `docker-compose up -d`;
+  }
+
 }
