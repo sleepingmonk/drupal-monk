@@ -1,5 +1,11 @@
 # Composer template for Drupal projects
 
+## Requirements
+
+* Docker: https://www.docker.com/community-edition
+* Docker Compose: https://docs.docker.com/compose/install/
+* Monkey Wrench: https://bitbucket.org/cheekymonkeymedia/monkey-wrench
+
 ## Local Development
 
 For local development, please remember the following:
