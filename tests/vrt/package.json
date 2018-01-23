@@ -1,0 +1,28 @@
+{
+  "name": "visual_regression_test_suite",
+  "version": "1.0.0",
+  "description": "CMM VRT setup.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "local": "backstop test --configPath=backstop.js --env=local",
+    "local:ref": "backstop reference --configPath=backstop.js --env=local",
+    "local:report": "backstop openReport --configPath=backstop.js --env=local",
+    "dev": "backstop test --configPath=backstop.js --env=dev",
+    "dev:ref": "backstop reference --configPath=backstop.js --env=dev",
+    "dev:report": "backstop openReport --configPath=backstop.js --env=dev",
+    "stage": "backstop test --configPath=backstop.js --env=stage",
+    "stage:ref": "backstop reference --configPath=backstop.js --env=stage",
+    "stage:report": "backstop openReport --configPath=backstop.js --env=stage",
+    "prod": "backstop test --configPath=backstop.js --env=prod",
+    "prod:ref": "backstop reference --configPath=backstop.js --env=prod",
+    "prod:report": "backstop openReport --configPath=backstop.js --env=prod"
+  },
+  "author": "David Cross",
+  "license": "ISC",
+  "devDependencies": {
+    "backstopjs": "^3.0.36",
+    "dotenv": "^4.0.0",
+    "glob-fs": "^0.1.7",
+    "minimist": "^1.2.0"
+  }
+}

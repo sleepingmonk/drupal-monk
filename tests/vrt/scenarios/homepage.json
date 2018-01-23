@@ -1,0 +1,10 @@
+{
+  "label": "Homepage",
+  "url": "/",
+  "referenceUrl": "/",
+  "hideSelectors": [],
+  "removeSelectors": [],
+  "selectors": ["document"],
+  "delay": 500,
+  "misMatchThreshold" : 0.1
+}
