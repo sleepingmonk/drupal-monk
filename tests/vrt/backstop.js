@@ -11,17 +11,21 @@ var glob = require('glob-fs')({ gitignore: true }); // handles globbing scenario
 var fs = require('fs'); // reads scenario files
 var defaultPaths = ['/']; // default path just checks the homepage as a quick smoke test
 var scenarios = []; // The array that'll have the URL paths to check
+var localhost = 'http://localhost:8000';
+var projName = '';
 
-var lando = fs.readFileSync('/app/.lando.yml').toString().split("\n");
-for(i in lando) {
-  if (lando[i].indexOf('name:') > -1) {
-    projName = lando[i].replace('name: ', '');
-    localhost = 'http://' + landoName + '.lndo.site';
+fs.readFile('/app/.lando.yml', (err, data) => {
+  if (!err) {
+    lando = data.toString().split("\n");
+    for(i in lando) {
+      if (lando[i].indexOf('name:') > -1) {
+        projName = lando[i].replace('name: ', '');
+        localhost = 'http://' + projName + '.lndo.site';
+      }
+    }
   }
-}
-if (localhost == null) {
-  localhost = 'http://localhost:8000';
-}
+});
+
 // env argument will capture the environment URL
 // if you use one of the options below to pass in, e.g. --env=dev
 //
