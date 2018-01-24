@@ -23,8 +23,6 @@ All commands are run from the VRT folder and use NPM scripts.
 
 `npm run <server>` will run tests on selected server.
 
-`npm run <local>:report` will quickly open the most recent test report for selected server.
-
 ## General workflow
 
 Create your feature branch and generate reference images.
