@@ -1,0 +1,10 @@
+{
+  "label": "Header",
+  "url": "/",
+  "referenceUrl": "/",
+  "hideSelectors": [],
+  "removeSelectors": [],
+  "selectors": ["header"],
+  "delay": 500,
+  "misMatchThreshold" : 0.1
+}
