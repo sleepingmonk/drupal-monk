@@ -1,0 +1,84 @@
+# project_code: cmm, apb_d7, etc.
+name: NAME
+
+# drupal8 | drupal7 | wordpress
+recipe: drupal8
+
+config:
+  # default: web | lightning: docroot
+  webroot: web
+
+  php: '7.1'
+
+  # Optionally activate xdebug
+  #
+  # If you are having trouble getting xdebug to work please see:
+  # https://docs.devwithlando.io/services/php.html#using-xdebug
+  xdebug: true
+
+
+  # *********************************************************************************
+  # ****   No need to change anything below, unless you know what you're doing.  ****
+  # ****                    And have a very specific need.                       ****
+  #**********************************************************************************
+
+
+# Additional services and features.
+services:
+  appserver:
+    build:
+
+    extras:
+      # Install Monkey Wrench
+      # While we use a node service with node-cli we also install nodejs in our
+      # appserver container because Monkey Wrench needs to run Node scripts and
+      # composer commands in one process. Only MW should use node in appserver.
+      # And developer use of node should be run in node-cli service and it's
+      # version controlled there.
+      - "curl -sL https://deb.nodesource.com/setup_9.x | bash -"
+      - "apt-get install -y nodejs"
+      - "cd /usr/local && git clone https://bitbucket.org/cheekymonkeymedia/monkey-wrench.git mw"
+      - "cd /usr/local/mw && git fetch && git checkout lando && chmod +x mw scripts/utilities/*"
+      - "cd /usr/local/mw && npm install"
+      - "ln -sf /usr/local/mw/mw /usr/local/bin/mw"
+
+  node-cli:
+    type: node:6.10
+
+    globals:
+      gulp-cli: "latest"
+
+# Custom Lando commands
+tooling:
+  build:
+    service: appserver
+    description: "Build the project."
+    cmd:
+      - /app/scripts/build
+      - -c
+  gulp:
+    service: node-cli
+  node:
+    service: node-cli
+  npm:
+    service: node-cli
+  mw:
+    service: appserver
+  test:phpunit:
+    service: appserver
+    description: "Run PHP Unit tests: lando phpunit"
+    cmd:
+      - ./vendor/bin/phpunit
+  test:vrt:
+    service: node-cli
+    description: "Use: test:vrt [local|dev|stage|prod]:ref to create reference. test:vrt [local|dev|stage|prod] to run comparision tests."
+    cmd:
+      - npm
+      - run
+      - --prefix=/app/tests/vrt
+  test:vrt:install:
+    service: node-cli
+    cmd:
+      - npm
+      - install
+      - /app/tests/vrt

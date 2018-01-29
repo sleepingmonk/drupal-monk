@@ -107,11 +107,7 @@ class ScriptHandler {
 SUCCESS!  You have installed your Drupal 8 Project!
 
 See README.md for important information.
-
-Spinning up docker containers.
 ";
-    // Spin up docker containers.
-    `docker-compose up -d`;
   }
 
 }
