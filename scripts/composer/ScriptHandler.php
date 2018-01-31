@@ -108,9 +108,10 @@ class ScriptHandler {
     $drupalFinder->locateRoot(getcwd());
     $drupalRoot = $drupalFinder->getDrupalRoot();
 
-    if (!$fs->exists($drupalRoot . '/../.lando.yml')) {
+    // Don't create .lando.yml if one exists. Check 2 dirs up for scenarios
+    // that build into a tmp directory and move back into lando directory.
+    if (!$fs->exists($drupalRoot . '/../.lando.yml') && !$fs->exists($drupalRoot . '/../../.lando.yml')) {
       $fs->rename($drupalRoot . '/../start.lando.yml', $drupalRoot . '/../.lando.yml');
-      $lando = file_get_contents($drupalRoot . '/../.lando.yml');
     }
     else {
       $fs->remove($drupalRoot . '/../start.lando.yml');
