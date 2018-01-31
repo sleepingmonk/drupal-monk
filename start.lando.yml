@@ -1,3 +1,6 @@
+# Rename this file to .lando.yml to use, or delete if you already have one.
+# Named start.lando.yml to not conflict with projects installed with lando mw install.
+
 # project_code: cmm, apb_d7, etc.
 name: NAME
 

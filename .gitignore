@@ -64,5 +64,5 @@ node_modules
 /.buildpath
 /.project
 
-# Docker/Build Files
+# Work/Build Files
 /data

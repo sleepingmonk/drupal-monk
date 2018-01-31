@@ -103,8 +103,24 @@ class ScriptHandler {
    *  Composer script event.
    */
   public static function postInstall(Event $event) {
+    $fs = new Filesystem();
+    $drupalFinder = new DrupalFinder();
+    $drupalFinder->locateRoot(getcwd());
+    $drupalRoot = $drupalFinder->getDrupalRoot();
+
+    if (!$fs->exists($drupalRoot . '/../.lando.yml')) {
+      $fs->rename($drupalRoot . '/../start.lando.yml', $drupalRoot . '/../.lando.yml');
+      $lando = file_get_contents($drupalRoot . '/../.lando.yml');
+    }
+    else {
+      $fs->remove($drupalRoot . '/../start.lando.yml');
+    }
+
     echo "
+
 SUCCESS!  You have installed your Drupal 8 Project!
+
+Set the project name: value in your .lando.yml file.
 
 See README.md for important information.
 ";
