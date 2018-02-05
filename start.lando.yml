@@ -57,7 +57,7 @@ tooling:
     service: appserver
     description: "Build the project."
     cmd:
-      - /app/scripts/build
+      - /app/scripts/build.sh
       - -c
   gulp:
     service: node-cli

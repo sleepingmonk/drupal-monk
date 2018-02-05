@@ -7,12 +7,7 @@ confirmed=false
 composer_install=true
 db_drop=false
 db_file=false
-destroy=false
-new_project=false
 production_build=""
-profile=false
-theme_install=false
-theme_name=apb_foundation
 
 # Basic yes/no prompt handler.
 # TODO: separate this into a helper.sh so it can be included in other scripts.
@@ -117,14 +112,14 @@ fi
 if $composer_install ; then
   echo
   echo "Running composer install."
-  docker-compose exec --user 82 php sh -c "composer install $production_build"
+  composer install $production_build
 
-  echo
-  echo "Removing vendor subproject .git directories..."
-  # If committing vendor dir we don't manage these as git subprojects.
-  find ./vendor/ -type d -name ".git" | xargs rm -rf
-  # If committing web dir we don't manage these as git subprojects.
-  find ./web/ -type d -name ".git" | xargs rm -rf
+  # echo
+  # echo "Removing vendor subproject .git directories..."
+  # # If committing vendor dir we don't manage these as git subprojects.
+  # find ./vendor/ -type d -name ".git" | xargs rm -rf
+  # # If committing web dir we don't manage these as git subprojects.
+  # find ./web/ -type d -name ".git" | xargs rm -rf
 
 fi
 
@@ -134,11 +129,17 @@ if [[ $db_file != false ]] ; then
     echo
     echo "Installing $db_file"
     echo
-    mw dbi $db_file
+    cd /app/web
+    if [ ${file: -4} == ".sql" ] ; then
+      cat $db_file | drush sqlc
+    fi
+    if [ ${file: -3} == ".gz" ] ; then
+      gunzip -c $db_file | drush sqlc
+    fi
   else
-     echo
-     echo -e "\033[31m$db_file not found. Use path relative to project root directory.\033[0m"
-     exit
+    echo
+    echo -e "\033[31m$db_file not found. Use path relative to current working directory.\033[0m"
+    exit
   fi
 fi
 
