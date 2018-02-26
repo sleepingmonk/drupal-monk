@@ -94,6 +94,7 @@
 # NOTE: If you do add a tag here, set push_tags=true so they'll get pushed.
 
 # tag_commit() {
+#   cd $DIR/$sync_target
 #   case $deploy_branch in
 #     develop )
 #       # Tag for develop.
@@ -104,7 +105,7 @@
 #     master )
 #       # Tag for master.
 #       # Get latest pantheon_live_ tag.
-#       git fetch host --tags
+#       git fetch origin --tags
 #       pantheon_prefix='pantheon_live_'
 #       pantheon_current=$(git tag -l --sort=v:refname $pantheon_prefix* | tail -1)
 #       pantheon_id=${pantheon_current#${pantheon_prefix}}
@@ -173,6 +174,7 @@
 # or whatever you need.
 
 post_deploy() {
+  echo "No post deploy."
   # # Set this with the pantheon site "Name". SEE: terminus site:list
   # site=[pantheon site name]
   # if [[ $deploy_branch == "master" ]] ; then
@@ -210,7 +212,7 @@ post_deploy() {
 # i.e Bitbucket and Host use same repo.
 # This is highly discouraged as it would mean dependencies, core and contribs
 # are committed to the development repo.
-sync_target=../deploy
+sync_target=data/_deploy
 # The file name containing a line separated list of files/dirs to sync.
 # Sync file should live in the data directory beside scripts file.
 sync_list=deploy.txt

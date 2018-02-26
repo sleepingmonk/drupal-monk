@@ -11,7 +11,7 @@ config:
   # default: web | lightning: docroot
   webroot: web
 
-  php: '7.1'
+  php: '7.0'
 
   # Optionally activate xdebug
   #
