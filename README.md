@@ -1,110 +1,68 @@
-# Composer template for Drupal projects
-
 ## Requirements
 
 * Docker: https://www.docker.com/community-edition
-* Docker Compose: https://docs.docker.com/compose/install/
+* Lando: https://docs.devwithlando.io
 * Monkey Wrench: https://bitbucket.org/cheekymonkeymedia/monkey-wrench
+
 
 ## Local Development
 
-For local development, please remember the following:
-* Make sure `web/sites/default/services.local.yml` is in place. (see `mw copy`)
-* Make sure `web/sites/default/settings.local.php` is in place. (see `mw copy`)
-* Make sure `web/sites/default/settings.php` includes settings.local.php.
-* Import your database. `mw dbi`
-* Config Import and Clear Caches. `mw local-dev`
+### Get latest code and start a feature branch.
 
-## Setup
+- Clone the working repo (bitbucket).
+- `cd [project root]`
+- `git checkout master` - Start all new features from master.
+- `git pull origin master` - To make sure you have the latest code.
+- `git checkout -b feature/[ID-123]--[short-description]` - Create new feature branch thusly.
 
-* `git fetch && git checkout master` Checkout the current master branch (default is develop)
-* `docker-compose up -d` from the project root.
-* `mw copy settings [path to src/sites/default/]` Copy default local settings. Edit if needed.
-* Copy the database dump (Should be pinned to project slack channel) to `[project]/data/master.sql`
-  Make sure it's extracted and not .zip or .gz
-* `mw composer . install` Build the project for local development.
-* `mw dbi data/master.sql` Install the database file.
-* `mw local-dev` Run local dev setup, including drush updb, cim, enable devel modules, generate login link.
+### Install site in local docker environment with Lando tooling.
 
-If you run into any problems with the build ping @calvin in slack.
+*First time setup, please remember the following:*
 
-## Development
+- Make sure `web/sites/default/services.local.yml` is in place. (see `mw copy`)
+- Make sure `web/sites/default/settings.local.php` is in place. (see `mw copy`)
+- Make sure `web/sites/default/settings.php` includes settings.local.php.
+  - Double check your db settings etc in the above files.
+  - Use `lando info` for db connection info.
+- Import your database. `lando db-import`
 
- - Move ticket to "in progress".
- - Make a `feature/[ticket-id]--short-description` branch from `master`.
- - Use composer (through Monkey Wrench), to install drupal modules.
-    - `mw composer . require drupal/[module] --no-update` (adds to composer.json without updating all other modules)
-    - `mw composer . update drupal/[module]` (installs/updates only the specified module, leaving composer.lock pretty clean)
- - Use Drupal Console (through Monkey Wrench), to scaffold modules, etc.
-    - `mw drupal generate:module` (`mw drupal` is a work in progress. If it doesn't work ping Calvin.)
+*Spin up the local:*
 
-*Any configuration changes should be managed with `mw drush cex` and `mw drush cim`*
+- `lando start` - Spin up the environment.
+- `lando build -y` - Clean composer install.
+- `lando build:theme` - Build the theme assets.
+- `lando build:reset` - Runs local-dev.sh to updb, cim, cr ...
 
-## Workflow
+**Ready to work.**
 
-* Pull Request: `feature/123` -> `develop`
-* Dev test on develop environment.
-* Pull Request: `feature/123` -> `staging/staging-x.y.z`
-* User Acceptance Test on stage environment.
-* Deploy feature release to master (production) after UAT sign off.
 
-For more info see workflow documentation.
-[https://drive.google.com/drive/u/0/folders/0B7ReslZJkgRZNzdHQ0xMd1VCNTQ](https://drive.google.com/drive/u/0/folders/0B7ReslZJkgRZNzdHQ0xMd1VCNTQ)
+## Module Management
 
-## Deploy
+From the project root:
 
-`mw deploy` for more info.
-This project deploy is set up for Monkey Wrench `v2.0`.
-`mw version` to check version.
-`mw update-mw` to fetch the latest.
-`mw version-set` to set based on project need.
+### Adding Contrib Modules
 
-### If `mw update-mw` fails:
+- `lando composer require drupal/[package_name] --no-update` to add it to the composer.json without updating everything.
+- `lando composer update drupal/[package_name]` to fetch/update only the desired module.
 
-You will need to manually pull the latest monkey-wrench.
+### Updating Contrib Modules
 
-`cd` to the dir you cloned monkey-wrench to `git checkout master` then `git pull origin master`.
-_If you don't know where that is, check your path or your aliases or search for `monkey-wrench`._
+- `lando composer update drupal/[package_name]`
 
-### If you have the latest Monkey Wrench and deploy fails:
+Sometimes several contrib modules are several versions behind.
 
-Set the Monkey Wrench version to the required version `mw version-set [version]`.
-If that works, It is strongly recommended you reconfigure this project to deploy using the latest methods.
+*Do not use `lando composer update` without specifying a module, or it will update everything that's outdated at once, possibly introducing regressions which you'll have to do much more testing for.*
 
-If it still does not work, troubleshoot the best you can and ask for help on slack.
+*Updates should be controlled and tested well. It's easiest to do that in smaller chunks. Especially watch out for BETA, ALPHA, or DEV versions of modules which are not stable and make no guarantees about not breaking things between updates.*
 
-## FAQ
+### Removing Contrib Modules
 
-### Should I commit the contrib modules I download?
+- `lando composer remove` will remove a package from require or require-dev.
+- A clean build `lando build` of the codebase will delete contribs and vendor code and rebuild, without the removed modules.
 
-Composer recommends **no**. They provide [argumentation against but also
-workrounds if a project decides to do it anyway](https://getcomposer.org/doc/faqs/should-i-commit-the-dependencies-in-my-vendor-directory.md).
-
-### Should I commit the scaffolding files?
-
-The [drupal-scaffold](https://github.com/drupal-composer/drupal-scaffold) plugin can download the scaffold files (like
-index.php, update.php, …) to the web/ directory of your project. If you have not customized those files you could choose
-to not check them into your version control system (e.g. git). If that is the case for your project it might be
-convenient to automatically run the drupal-scaffold plugin after every install or update of your project. You can
-achieve that by registering `@drupal-scaffold` as post-install and post-update command in your composer.json:
-
-```json
-"scripts": {
-    "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold",
-    "post-install-cmd": [
-        "@drupal-scaffold",
-        "..."
-    ],
-    "post-update-cmd": [
-        "@drupal-scaffold",
-        "..."
-    ]
-},
-```
 ### How can I apply patches to downloaded modules?
 
-If you need to apply patches (depending on the project being modified, a pull
-request is often a better solution), you can do so with the
+If you need to apply patches, you can do so with the
 [composer-patches](https://github.com/cweagans/composer-patches) plugin.
 
 To add a patch to drupal module foobar insert the patches section in the extra
@@ -118,6 +76,55 @@ section of composer.json:
     }
 }
 ```
-### How do I switch from packagist.drupal-composer.org to packages.drupal.org?
 
-Follow the instructions in the [documentation on drupal.org](https://www.drupal.org/docs/develop/using-composer/using-packagesdrupalorg).
+
+## To Deploy
+
+_*If you're going to deploy, especially to production, make sure you understand how to configure, and what's happening during, the deploy process. It's great that we can automate things, but if you don't know what the machine is doing, you're going to panic or have a really hard time if something goes wrong.*_
+
+_*Automation is a tool to make developers more efficient, not a replacement for knowledge and competency. Make sure a responsible adult is around to help.*_
+
+**MAKE A BACKUP of CODE, FILES AND DATABASE before deploying TO PRODUCTION**
+
+**You should have the working repo configured first. See above.**
+
+- If you haven't already: Clone the PRODUCTION repo aka: the "build artifact" (from host i.e. pantheon) to `[project root]/data/_deploy`
+    - From `[project root]` do:
+        - `git clone [production git url] data/_deploy`
+
+*Back in the working repo:*
+
+- `git checkout [branch to deploy]` develop or staging/staging-[version].
+- `lando build -y` - Clean composer install.
+- `lando build:theme` IMPORTANT: Compiled theme assets like CSS and JS are not committed to the working repo they must be generated.
+    - These compiled assets will be synced with the production repo during deploy.
+- **Make sure you have Monkey Wrench v2.2**
+    - `mw version` should show you `v2.2`
+    - `mw version-set v2.2` - to switch to the correct version.
+    - If either of those commands fail, you have an outdated MW.
+        - Try `mw update-mw` to pull the latest code.
+        - Then use the commands above to make sure you're on `v2.2`.
+        - If `mw update-mw` doesn't do anything... you have a REALLY outdated MW, or no MW at all. Please see: [Monkey Wrench](https://bitbucket.org/cheekymonkeymedia/monkey-wrench/src/master/)
+- `mw deploy [develop|stage|master] <version>`
+    - This will sync the required elements from the local build to the production repo, commit and push to the host.
+
+**Watch for errors in the sync and git push.**
+
+
+### Troubleshooting Deploy:
+
+#### Deployment Configuration Checklist
+
+- Using proper mw version? `v2.2` projects will have a `scripts/deploy` file to configure details about the deploy for that project. `v1.5` projects will have a `deploy.ini` file.
+- `v2.2` is your `scripts/deploy` file configured properly? If others can deploy the project without issue, then it likely is. If not, RTFM or ask a wise monkey for assitance.
+- `v2.2` Have you cloned the build artifact (repo) to the default `data/_deploy` (or whatever path is configured in `scripts/deploy`)?
+
+#### Other common issues _not related to `mw deploy`_
+
+`lando build` or `lando build:theme` errors:
+
+- `lando rebuild` to rebuild local containers.
+- `lando destroy && lando start` because `lando rebuild` didn't help and you _*really*_ mean it this time.
+- Restart Docker: because `lando destroy` didn't help and you just need to flush the system.
+- NUKE VIRTUALIZATION TOOLS - Reinstall Lando, or Docker, or Both. *Obviously a last resort.* You shouldn't have to do this, unless maybe you updated one or the other recently and something isn't right.
+- Flip Table (╯°□°）╯︵ ┻━┻  - Re-evaluate your life.
