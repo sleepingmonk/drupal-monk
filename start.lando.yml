@@ -59,6 +59,17 @@ tooling:
     cmd:
       - /app/scripts/build.sh
       - -c
+  build:reset:
+    service: appserver
+    description: "Run local-dev script. (updb, cim, cr, uli)"
+    cmd:
+      - /app/scripts/local-dev.sh
+  build:theme:
+    service: node-cli
+    description: "Compile the theme."
+    cmd:
+      - /app/scripts/build.sh
+      - -t
   gulp:
     service: node-cli
   node:
