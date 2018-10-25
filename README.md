@@ -124,7 +124,7 @@ _*Automation is a tool to make developers more efficient, not a replacement for 
 `lando build` or `lando build:theme` errors:
 
 - `lando rebuild` to rebuild local containers.
-- `lando destroy && lando start` because `lando rebuild` didn't help and you _*really*_ mean it this time.
-- Restart Docker: because `lando destroy` didn't help and you just need to flush the system.
+- Restart Docker: because `lando rebuild` didn't help and you just need to flush the system.
+- `lando destroy && lando start` because Docker Restart didn't help and you _*really*_ mean it this time.
 - NUKE VIRTUALIZATION TOOLS - Reinstall Lando, or Docker, or Both. *Obviously a last resort.* You shouldn't have to do this, unless maybe you updated one or the other recently and something isn't right.
 - Flip Table (╯°□°）╯︵ ┻━┻  - Re-evaluate your life.
