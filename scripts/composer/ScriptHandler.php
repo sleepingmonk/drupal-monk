@@ -11,6 +11,7 @@ use Composer\Script\Event;
 use Composer\Semver\Comparator;
 use DrupalFinder\DrupalFinder;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Webmozart\PathUtil\Path;
 
 class ScriptHandler {
@@ -36,13 +37,13 @@ class ScriptHandler {
     }
 
     // Prepare the settings file for installation
-    if (!$fs->exists($drupalRoot . '/sites/default/settings.php') and $fs->exists($drupalRoot . '/sites/default/default.settings.php')) {
+    if (!$fs->exists($drupalRoot . '/sites/default/settings.php') and $fs->exists($drupalRoot . '/sites/default/zdefault.settings.php')) {
       $fs->copy($drupalRoot . '/sites/default/default.settings.php', $drupalRoot . '/sites/default/settings.php');
       require_once $drupalRoot . '/core/includes/bootstrap.inc';
       require_once $drupalRoot . '/core/includes/install.inc';
       $settings['config_directories'] = [
         CONFIG_SYNC_DIRECTORY => (object) [
-          'value' => Path::makeRelative($drupalFinder->getComposerRoot() . '/config/sync', $drupalRoot),
+          'value' => Path::makeRelative($drupalFinder->getComposerRoot() . '/config', $drupalRoot),
           'required' => TRUE,
         ],
       ];
@@ -104,9 +105,11 @@ class ScriptHandler {
    */
   public static function postInstall(Event $event) {
     $fs = new Filesystem();
+    $finder = new Finder();
     $drupalFinder = new DrupalFinder();
     $drupalFinder->locateRoot(getcwd());
     $drupalRoot = $drupalFinder->getDrupalRoot();
+    $composerRoot = $drupalFinder->getComposerRoot();
 
     // Don't create .lando.yml if one exists. Check 2 dirs up for scenarios
     // that build into a tmp directory and move back into lando directory.
@@ -117,13 +120,28 @@ class ScriptHandler {
       $fs->remove($drupalRoot . '/../start.lando.yml');
     }
 
-    echo "
+    // Move settings.local.php files if necessary.
+    // Get site dirs.
+    $finder->depth('== 0');
+    $finder->directories()->in($drupalRoot . '/sites');
+    $copy_files = ['settings.local.php', 'services.local.yml', 'settings.php'];
 
+    foreach ($finder as $dir) {
+      $site = str_replace($drupalRoot . '/sites/', '', $dir);
+      foreach ($copy_files as $copy_file) {
+        if ($fs->exists("$composerRoot/scripts/local/$site/$copy_file") && !$fs->exists("$dir/$copy_file")) {
+          $fs->copy("$composerRoot/scripts/local/$site/$copy_file", "$dir/$copy_file");
+          echo "\n$copy_file was copied to $dir from scripts/local/$site\n";
+          echo "This *SHOULD* get you started. Review $dir/$copy_file if you're having trouble.\n";
+        }
+      }
+      echo "\nYou *MAY* find a starter sql file here: 'scripts/local/$site/sql.start' that you can import directly if you need it.\n";
+
+    }
+
+    echo "\n
 SUCCESS!  You have installed your Drupal 8 Project!
-
-Set the project name: value in your .lando.yml file.
-
-See README.md for important information.
+See README.md for important information.\n
 ";
   }
 
