@@ -1,6 +1,6 @@
 {
-    "name": "cheeky-monkey-media/drupal-project",
-    "description": "Project template for Drupal 8 projects with composer, with cheeky helpers.",
+    "name": "sleepingmonk/drupal-monk",
+    "description": "Project template for Drupal 8 projects with composer and helpers.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "authors": [

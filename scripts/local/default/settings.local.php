@@ -8,8 +8,6 @@
  *
  * If you find common settings you use locally on many projects, please
  * feel free to add them to the project and create a PR for review.
- *
- * https://bitbucket.org/cheekymonkeymedia/monkey-wrench
  */
 
 /**
@@ -125,8 +123,6 @@ $databases['default']['default'] = array (
   'driver' => 'mysql',
 );
 
-$settings['hash_salt'] = 'monkeysrule';
-
 /* Temp and Private dirctories. */
 $config['system.file']['path']['temporary'] = '../data/tmp';
 $config['system.file']['path']['private'] = '../data/private';
@@ -139,6 +135,10 @@ $config['system.performance']['fast_404'] = ['enabled' => FALSE];
 $config['system.performance']['css'] = ['preprocess' => FALSE, 'gzip' => FALSE];
 $config['system.performance']['js'] = ['preprocess' => FALSE, 'gzip' => FALSE];
 $config['system.performance']['response'] = ['gzip' => FALSE];
+
+$config['devel.settings']['error_handlers'] = 4;
+$config['devel.settings']['devel_dumper'] = 'var_dumper';
+$config['system.logging']['error_level'] = 'verbose';
 
 /* Stage File Proxy Settings */
 // $config['stage_file_proxy.settings']['origin'] = '[origin site]';

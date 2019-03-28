@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\fastMonkey\Functional;
+namespace Drupal\Tests\monk\Functional;
 
 use Drupal\Tests\SchemaCheckTestTrait;
 use Drupal\contact\Entity\ContactForm;
@@ -11,15 +11,15 @@ use Drupal\Tests\BrowserTestBase;
 use Drupal\user\Entity\Role;
 
 /**
- * Tests FastMonkey installation profile expectations.
+ * Tests Monk installation profile expectations.
  *
- * @group fastMonkey
+ * @group monk
  */
-class FastMonkeyTest extends BrowserTestBase {
+class MonkTest extends BrowserTestBase {
 
   use SchemaCheckTestTrait;
 
-  protected $profile = 'fastMonkey';
+  protected $profile = 'monk';
 
   /**
    * The admin user.
@@ -29,9 +29,9 @@ class FastMonkeyTest extends BrowserTestBase {
   protected $adminUser;
 
   /**
-   * Tests FastMonkey installation profile.
+   * Tests Monk installation profile.
    */
-  public function testFastMonkey() {
+  public function testMonk() {
     $this->drupalGet('');
     $this->assertLink(t('Contact'));
     $this->clickLink(t('Contact'));
@@ -106,7 +106,7 @@ class FastMonkeyTest extends BrowserTestBase {
 
     // Now we have all configuration imported, test all of them for schema
     // conformance. Ensures all imported default configuration is valid when
-    // fastMonkey profile modules are enabled.
+    // monk profile modules are enabled.
     $names = $this->container->get('config.storage')->listAll();
     /** @var \Drupal\Core\Config\TypedConfigManagerInterface $typed_config */
     $typed_config = $this->container->get('config.typed');
@@ -115,7 +115,7 @@ class FastMonkeyTest extends BrowserTestBase {
       $this->assertConfigSchema($typed_config, $name, $config->get());
     }
 
-    // Ensure that configuration from the FastMonkey profile is not reused when
+    // Ensure that configuration from the Monk profile is not reused when
     // enabling a module again since it contains configuration that can not be
     // installed. For example, editor.editor.basic_html is editor configuration
     // that depends on the ckeditor module. The ckeditor module can not be
