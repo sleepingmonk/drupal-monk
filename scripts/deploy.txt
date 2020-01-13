@@ -1,0 +1,15 @@
+# Files to include for deployment to the environment in a build artifact.
+# The deploy.sh script will sync files and directories from working repo to artifact with:
+# rsync -KPar --delete --force --files-from=[path to THIS file] [working repo] [deployment repo]
+
+# One directory of filename per line relative to project root.
+config
+drush
+scripts
+tests
+vendor
+web
+composer.json
+composer.lock
+pantheon.yml
+phpunit.xml.dist
