@@ -3,6 +3,8 @@
 # rsync -KPar --delete --force --files-from=[path to THIS file] [working repo] [deployment repo]
 
 # One directory of filename per line relative to project root.
+
+#pantheon.yml
 config
 drush
 scripts
@@ -11,5 +13,4 @@ vendor
 web
 composer.json
 composer.lock
-pantheon.yml
 phpunit.xml.dist
