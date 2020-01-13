@@ -11,13 +11,13 @@ config:
   # default: web | lightning: docroot
   webroot: web
 
-  php: '7.1'
+  php: '7.3'
 
   # Optionally activate xdebug
   #
   # If you are having trouble getting xdebug to work please see:
   # https://docs.devwithlando.io/services/php.html#using-xdebug
-  xdebug: true
+  #xdebug: true
 
 
   # *********************************************************************************
@@ -30,53 +30,37 @@ services:
   # Theme.
   node-cli:
     type: node:10
-
     globals:
       gulp-cli: "latest"
-
-
+    overrides:
+      ports:
+        - 3000:3000
 # Custom Lando commands
 tooling:
-  build:
+  deploy:
     service: appserver
-    description: "Build the project. \n  -c Clean build. \n  -l (live) Build production code. composer install --no-dev \n -t Theme build \n  -w Run theme watcher \n  -y Confirm prompts."
+    description: "deploy [env]"
     cmd:
-      - /app/scripts/build.sh
-      - -c
-  build:reset:
-    service: appserver
-    description: "Run local-dev script. (updb, cim, cr, uli)"
-    cmd:
-      - /app/scripts/reset.sh
-  build:theme:
-    service: node-cli
-    description: "Compile the theme."
-    cmd:
-      - /app/scripts/build.sh
-      - -t
-  gulp:
-    service: node-cli
+      - /app/scripts/deploy.sh
   node:
     service: node-cli
   npm:
     service: node-cli
-  mw:
+  reset:
     service: appserver
-  test:phpunit:
-    service: appserver
-    description: "Run PHP Unit tests: lando phpunit"
+    description: "Runs updb, cr, cim, uli \n Reset your local after a build or db install."
     cmd:
-      - ./vendor/bin/phpunit
-  test:vrt:
+      - drush updb -y
+      - drush cr
+      - drush cim -y
+  tb:
     service: node-cli
-    description: "Use: test:vrt [local|dev|stage|prod]:ref to create reference. test:vrt [local|dev|stage|prod] to run comparision tests."
+    description: "Build theme assets."
     cmd:
-      - npm
-      - run
-      - --prefix=/app/tests/vrt
-  test:vrt:install:
+      - npm run dev --prefix /app/web/themes/custom/[theme]
+  tw:
     service: node-cli
+    description: "Run theme watcher."
     cmd:
-      - npm
-      - install
-      - /app/tests/vrt
+      - npm run watch --prefix /app/web/themes/custom/[theme]
+
