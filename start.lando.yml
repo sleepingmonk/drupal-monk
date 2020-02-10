@@ -17,7 +17,7 @@ config:
   #
   # If you are having trouble getting xdebug to work please see:
   # https://docs.devwithlando.io/services/php.html#using-xdebug
-  #xdebug: true
+  # xdebug: true
 
 
   # *********************************************************************************
@@ -30,37 +30,59 @@ services:
   # Theme.
   node-cli:
     type: node:10
-    globals:
-      gulp-cli: "latest"
-    overrides:
-      ports:
-        - 3000:3000
+
 # Custom Lando commands
 tooling:
-  deploy:
+  build:
     service: appserver
-    description: "deploy [env]"
+    description: "Build the project."
     cmd:
-      - /app/scripts/deploy.sh
+      appserver: composer install -d /app
+      node-cli: npm install --prefix /app/[webroot]/themes/custom/[theme name]
+      node-cli: npm run build --prefix /app/[webroot]/themes/custom/[theme name]
+  deploy:
+    description: "lando deploy [env]"
+    appserver: composer install --no-dev -o -d /app && echo installing
+    node-cli: npm install --prefix /app/web/themes/custom/[theme name] && npm run build --prefix /app/web/themes/custom/[theme name] && echo building
+    appserver: /app/scripts/deploy.sh
   node:
     service: node-cli
   npm:
     service: node-cli
   reset:
     service: appserver
-    description: "Runs updb, cr, cim, uli \n Reset your local after a build or db install."
+    description: "updb, cim, cr"
     cmd:
       - drush updb -y
-      - drush cr
       - drush cim -y
+      - drush cr
+      - drush uli
   tb:
     service: node-cli
-    description: "Build theme assets."
+    description: "Compile the theme."
     cmd:
-      - npm run dev --prefix /app/web/themes/custom/[theme]
+      - npm run build --prefix /app/[webroot]/themes/custom/[theme name]
+  ti:
+    service: node-cli
+    description: "Theme: Install - `ti [theme_name]` (npm install)"
+    cmd:
+      - npm install --prefix /app/[webroot]/themes/custom/[theme name]
+      - npm run build --prefix /app/[webroot]/themes/custom/[theme name]
   tw:
     service: node-cli
-    description: "Run theme watcher."
+    description: "Theme: Watch `tw [theme_name]`"
     cmd:
-      - npm run watch --prefix /app/web/themes/custom/[theme]
+      - npm run dev --prefix /app/[webroot]/themes/custom/[theme name]
+  # Docker is extra slow with xdebug enabled. Turn it on and off as needed without rebuilding.
+  # xdebug: https://github.com/lando/lando/issues/1668#issuecomment-507191275
+  xon:
+    service: appserver
+    description: Enable xdebug for apache.
+    cmd: "docker-php-ext-enable xdebug && /etc/init.d/apache2 reload"
+    user: root
+  xoff:
+    service: appserver
+    description: Disable xdebug for apache.
+    cmd: "rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && /etc/init.d/apache2 reload"
+    user: root
 

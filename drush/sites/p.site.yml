@@ -1,0 +1,41 @@
+develop:
+  host:
+  user:
+  uri:
+  ssh:
+    tty: false
+    options: '-p 2222 -o "AddressFamily inet"'
+  paths:
+    files: files
+    drush-script: drush9
+  options:
+    db-allows-remote: true
+    db-url: ''
+
+stage:
+  host:
+  user:
+  uri:
+  ssh:
+    tty: false
+    options: '-p 2222 -o "AddressFamily inet"'
+  paths:
+    files: files
+    drush-script: drush9
+  options:
+    db-allows-remote: true
+    db-url: ''
+
+live:
+  host:
+  user:
+  uri:
+  ssh:
+    tty: false
+    options: '-p 2222 -o "AddressFamily inet"'
+  paths:
+    files: files
+    drush-script: drush9
+  options:
+    db-allows-remote: true
+    db-url: ''
