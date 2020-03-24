@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# A helper script to run lando commands on a given sub theme.
+# i.e. lando tw [theme]  (This will start the watcher for [theme]).
+# See .lando.yml for how this script is called.
+
+set -e
+
+# Reset in case getopts has been used previously in the shell.
+OPTIND=1
+
+GREEN="\033[32m"
+YELLOW="\033[33m"
+RED="\033[31m"
+RESET="\033[0m"
+
+if [ -d $PWD/docroot ] ; then
+  WEBROOT=docroot
+fi
+
+if [ -d $PWD/web ] ; then
+  WEBROOT=docroot
+fi
+
+if [ -z $WEBROOT ] ; then
+  echo -e "\n${RED}Can't find webroot. Looking for 'web' or 'docroot'.${RESET}"
+  echo -e "  - Run this command from project root and make sure webroot exists."
+  exit 1
+fi
+
+build_all () {
+  # Loop over sub themes and build them all.
+  for d in $PWD/web/themes/custom/* ; do
+    echo
+    echo -e "${GREEN}Now building:${RESET} ${YELLOW} $d ${RESET}"
+    echo
+    npm install --prefix $d
+    npm run production --prefix $d
+  done
+}
+
+name_check () {
+  if [ -z "$1" ] ;
+  then
+    echo "You need to indicate a theme_name for theme functions, or \"Theme Name\" for creating a sub theme."
+    exit 1
+  fi
+}
+
+show_help () {
+  echo
+  echo "This is a helper script for lando commands, for managing multiple themes."
+  echo
+  echo -e "You need to include a theme machine name for most functions or a theme 'human' name for creating a sub theme.\nAll themes should live in 'web/themes/custom'."
+  echo
+  echo " - lando ti [theme_name] - Will run 'npm install' and 'npm run build' on this theme."
+  echo " - lando tw [theme_name] - Will run the watcher for theme development."
+  echo " - lando tb [theme_name] - Will run 'npm run build' on this theme."
+  echo " - lando tb:all - Will run 'npm run build' on all themes in the themes/custom directory."
+  echo -e " - lando ts [Theme Name] - Will create a new sub theme from jcc_base with the human name provided.\n    The machine name will be a created as [theme_name]"
+}
+
+while getopts "h?abiw:" opt; do
+    case "$opt" in
+    h|\?)
+        show_help
+        exit 0
+        ;;
+    a)
+        build_all
+        exit 0
+        ;;
+    b)
+        name_check $2
+        npm run production --prefix $PWD/web/themes/custom/$2
+        exit 0
+        ;;
+    i)
+        name_check $2
+        npm install --prefix $PWD/web/themes/custom/$2
+        exit 0
+        ;;
+    w)
+        name_check $2
+        npm run watch --prefix $PWD/web/themes/custom/$2
+        exit 0
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
