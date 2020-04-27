@@ -41,12 +41,14 @@ Add your author information for historical reference and professional context, a
 
 ## Local Development
 
+*NOTE:* `composer.json: extra: working-repo` is used to prevent developers from accidentally working on a cloned production artifact. Set it's value to the working github repo url. Composer will check it against `git remote get-url origin`.
+
 * Docker: https://www.docker.com/community-edition
 * Lando: https://docs.devwithlando.io
 
 Lando/Docker optional, any *AMP environment will do, but there is helpful tooling here for Lando.
 
-**WARNING: Docker for Mac 2.2 currently breaks Lando. Use the Lando installer to install it's preferred version of Docker.**
+**WARNING: Use the Lando installer to install it's preferred version of Docker.**
 
 Once installed cd to project directory and type `lando` for a list of commands.
 
@@ -78,15 +80,15 @@ From the project root:
 ### Adding Contrib Modules
 
  - `lando composer require drupal/[package_name] --no-update` to add it to the composer.json without updating everything.
- - `lando composer update drupal/[package_name] -o` to fetch/update only the desired module.
+ - `lando composer update drupal/[package_name]` to fetch/update only the desired module.
 
 ### Updating Core
 
-- `lando composer update drupal/core drupal/core-recommended --with-dependencies -o`
+- `lando composer update drupal/core drupal/core-recommended --with-dependencies`
 
 ### Updating Contrib Modules
 
- - `lando composer update drupal/[package_name] -o`
+ - `lando composer update drupal/[package_name]`
 
 Sometimes several contrib modules are several versions behind.
 
@@ -107,7 +109,7 @@ Phase 1: Uninstall the module:
 Phase 2: Remove the module:
 
  - `lando composer remove [package] --no-update` will remove a package from require or require-dev, without running all updates.
- - `lando composer update [package] -o` will remove the package code.
+ - `lando composer update [package]` will remove the package code.
 
 ### Applying Patches
 

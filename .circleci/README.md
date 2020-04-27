@@ -87,3 +87,15 @@ If your project has drush aliases configured for your hosting platform, you can 
 ## Closing
 
 Configuring your CI/CD pipeline can depend on a number of factors and preferences. The configuration may change during it's life, in order to better serve the evolving needs of the project, but keeping it simple and platform agnostic makes it very easy to port to new tooling and environments, plus makes build/test less error prone.
+
+## Setup and Configure
+
+- Activate your project in Circle CI.  It should automatically link with Github.
+- Add your ssh private key to Circle CI > SSH Keys > Additional Keys
+  - The key that matches a public key on your project host.
+- Add the fingerprint for this key to the deploy step in your Circle CI config.yml (this is how we give CI access to to host to push code.)
+- Set up Environment Variables in CI project config.
+  - $GIT_EMAIL if you want to set it per project.
+  - $ARTIFACT_GIT - the git url for hosted code. (not the github repo).
+- Disable Strict Host Checking for all envs you're going to push to. (See top of .circleci/scripts/deploy.sh)
+- Review the reset of deploy.sh for variables and function.

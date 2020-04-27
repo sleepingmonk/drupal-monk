@@ -99,6 +99,26 @@ class ScriptHandler {
   }
 
   /**
+   * Check if this repo is the working repo.
+   *
+   * Do not install if developer has checked out the build artifact rather than
+   * the working repo.
+   */
+  public static function checkRepo(Event $event) {
+    $extra = $event->getComposer()->getPackage()->getExtra();
+    $working_repo = !empty($extra['working-repo']) ? $extra['working-repo'] : NULL;
+    $origin = exec("git remote get-url origin");
+    if (!empty($working_repo) && $origin != $working_repo) {
+      echo "\n\n\e[33mWORKING REPO WARNING!\e[0m \n";
+      echo "\n\e[31m$origin\e[0m \ndoes not appear to be the working repo.";
+      echo "\nUse this for local development: \n\e[32m$working_repo\e[0m";
+      echo "\nLocal work should done on the working repo from github. You may have checked out a build artifact from a host.\n";
+      echo "\nPlease see the project README.md for workflow and deployment process.\nSee composer.json extra:working-repo\n";
+      exit(1);
+    }
+  }
+
+  /**
    * Post install tasks.
    * @param  Event  $event
    *  Composer script event.
