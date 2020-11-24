@@ -1,4 +1,4 @@
-develop:
+dev:
   host:
   user:
   uri:
@@ -8,9 +8,6 @@ develop:
   paths:
     files: files
     drush-script: drush9
-  options:
-    db-allows-remote: true
-    db-url: ''
 
 stage:
   host:
@@ -22,11 +19,8 @@ stage:
   paths:
     files: files
     drush-script: drush9
-  options:
-    db-allows-remote: true
-    db-url: ''
 
-live:
+production:
   host:
   user:
   uri:
@@ -36,6 +30,3 @@ live:
   paths:
     files: files
     drush-script: drush9
-  options:
-    db-allows-remote: true
-    db-url: ''

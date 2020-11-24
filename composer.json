@@ -88,7 +88,7 @@
         "code-sniff": "echo 'No code sniff step defined.'",
         "unit-test": "echo 'No unit test step defined.'",
         "artifact-sync": [
-            "rsync -KPar --delete --force --files-from=scripts/deploy.ini ./ data/artifact/"
+            "rsync -KPar --delete --force --files-from=scripts/artifact-sync.ini ./ data/artifact/"
         ]
     },
     "extra": {

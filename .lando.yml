@@ -1,6 +1,3 @@
-# Rename this file to .lando.yml to use, or delete if you already have one.
-# Named start.lando.yml to not conflict with projects installed with lando mw install.
-
 # project_code: cmm, apb_d7, etc.
 name:
 
@@ -19,12 +16,6 @@ config:
   # https://docs.devwithlando.io/services/php.html#using-xdebug
   # xdebug: true
 
-
-  # *********************************************************************************
-  # ****   No need to change anything below, unless you know what you're doing.  ****
-  # ****                    And have a very specific need.                       ****
-  #**********************************************************************************
-
 # Additional services and features.
 services:
   # Theme.
@@ -34,11 +25,10 @@ services:
 # Custom Lando commands
 tooling:
   deploy:
-    description: "lando deploy [env]"
+    description: "lando deploy \tDeploys current branch to env. See README.md for workflow."
     cmd:
-      - appserver: composer install --no-dev -o -d /app && echo installing
       - node-cli: /app/scripts/theme.sh -a
-      - appserver: /app/scripts/deploy.sh
+      - appserver: /app/.localci/deploy.sh
   fresh:
     description: Run all the things to get local to a fresh state for this branch. (Checkout master branch first if starting a new feature.)
     cmd:

@@ -91,7 +91,7 @@ jobs:
 
             - run:
                 name: Deploy Artifact
-                command: chmod +x .circleci/scripts/deploy.sh && .circleci/scripts/deploy.sh
+                command: .ci/scripts/deploy.sh
 
 workflows:
   version: 2
