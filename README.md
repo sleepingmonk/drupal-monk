@@ -132,7 +132,7 @@ section of composer.json:
 
 **NOTE: Always reset your local to a production like state before starting a new feature. Configuration should be imported from `master` and/or a production database should be imported before starting work, so that config changes from the new feature are clean when exported.**
 
-This project is configured for a [Parallel Git Workflow `*`See note if hosting on Pantheon][parallelpdf] using multidev environments.
+This project is configured for a [Parallel Git Workflow - See note if hosting on Pantheon][parallelpdf] using multidev environments.
 
 ENV -> GIT BRANCH
 
