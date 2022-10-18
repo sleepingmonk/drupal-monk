@@ -53,7 +53,7 @@ Thumbs.db
 # SASS #
 ##########
 .sass-cache
-*.css.map
+/web/themes/custom/**/*.css.map
 node_modules
 
 # IDE settings #
@@ -65,3 +65,25 @@ node_modules
 
 # Work/Build Files
 /data
+.env
+.env-*
+config/local
+cypress/downloads
+cypress/examples
+cypress/screenshots
+cypress/videos
+/.csslintrc
+/.editorconfig
+/.eslintignore
+/.eslintrc.json
+/.gitattributes
+/.ht.router.php
+/.htaccess
+/INSTALL.txt
+/autoload.php
+/example.gitignore
+/index.php
+/robots.txt
+/update.php
+/web.config
+.lando.local.yml

@@ -2,7 +2,7 @@ name: Monk
 type: profile
 description: 'Install with commonly used features pre-configured.'
 version: VERSION
-core: 8.x
+core_version_requirement: ^8.8.0 || ^9
 dependencies:
   - automated_cron
   - big_pipe
@@ -43,7 +43,6 @@ dependencies:
   - admin_toolbar
   - admin_toolbar_tools
   - admin_toolbar_links_access_filter
-  - adminimal_admin_toolbar
   - diff
   - environment_indicator
   - environment_indicator_ui
@@ -56,5 +55,5 @@ dependencies:
   - xmlsitemap
 
 themes:
-  - bartik
-  - seven
+  - monk_theme
+  - gin

@@ -1,0 +1,35 @@
+# Main theme library.
+global:
+  css:
+    base:
+      css/base/_variables.css: {}
+      css/base/elements.css: {}
+    component:
+      css/components/block.css: {}
+      css/components/breadcrumb.css: {}
+      css/components/field.css: {}
+      css/components/form.css: {}
+      css/components/header.css: {}
+      css/components/menu.css: {}
+      css/components/messages.css: {}
+      css/components/node.css: {}
+      css/components/sidebar.css: {}
+      css/components/table.css: {}
+      css/components/tabs.css: {}
+      css/components/buttons.css: {}
+    layout:
+      css/layouts/layout.css: {}
+      css/layouts/box.css: {}
+      css/layouts/center.css: {}
+      css/layouts/cluster.css: {}
+      css/layouts/cover.css: {}
+      css/layouts/frame.css: {}
+      css/layouts/grid.css: {}
+      css/layouts/icon.css: {}
+      css/layouts/imposter.css: {}
+      css/layouts/reel.css: {}
+      css/layouts/sidebar.css: {}
+      css/layouts/stack.css: {}
+      css/layouts/switcher.css: {}
+    theme:
+      css/theme/print.css: { media: print }

@@ -1,5 +1,0 @@
-# Standard items
-node_modules
-
-# Don't commit real passwords
-.env

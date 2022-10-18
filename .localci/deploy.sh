@@ -36,6 +36,7 @@ composer run unit-test --working-dir=${BASEDIR}
 # Deploy Artifact.
 . ${BASEDIR}/.ci/scripts/deploy.sh
 # Clean Up.
+# Comment this line out to speed up future local deploys.
 rm -rf ${BASEDIR}/data/artifact
 
 exit 0

@@ -107,15 +107,15 @@ $settings['skip_permissions_hardening'] = TRUE;
 /**
  * Enable local development services.
  */
-$settings['container_yamls'][] = DRUPAL_ROOT . '/sites/default/services.local.yml';
+$settings['container_yamls'][] = DRUPAL_ROOT . '/sites/development.services.yml';
 
 /**
  * Database settings: *
  */
 $databases['default']['default'] = array (
-  'database' => 'drupal8',
-  'username' => 'drupal8',
-  'password' => 'drupal8',
+  'database' => 'drupal9',
+  'username' => 'drupal9',
+  'password' => 'drupal9',
   'prefix' => '',
   'host' => 'database',
   'port' => '3306',
@@ -144,8 +144,3 @@ $config['system.logging']['error_level'] = 'verbose';
 // $config['stage_file_proxy.settings']['origin'] = '[origin site]';
 // $config['stage_file_proxy.settings']['use_imagecache_root'] = 0;
 // $config['stage_file_proxy.settings']['hotlink'] = 1;
-
-/* Config Sync dir */
-// For pantheon hosting, use sites/default/files as its writable
-// Move into settings.php at the end to override pantheon settings.
-// $config_directories[CONFIG_SYNC_DIRECTORY] = 'sites/default/files/config';

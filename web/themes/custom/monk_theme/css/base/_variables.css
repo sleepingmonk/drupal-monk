@@ -1,0 +1,47 @@
+:root {
+  /* Scale */
+  --measure: 60ch;
+  --ratio: 1.5;
+  --s-5: calc(var(--s-4) / var(--ratio));
+  --s-4: calc(var(--s-3) / var(--ratio));
+  --s-3: calc(var(--s-2) / var(--ratio));
+  --s-2: calc(var(--s-1) / var(--ratio));
+  --s-1: calc(var(--s0) / var(--ratio));
+  --s0: 1rem;
+  --s1: calc(var(--s0) * var(--ratio));
+  --s2: calc(var(--s1) * var(--ratio));
+  --s3: calc(var(--s2) * var(--ratio));
+  --s4: calc(var(--s3) * var(--ratio));
+  --s5: calc(var(--s4) * var(--ratio));
+
+  /* Color */
+  --color-primary: #fff;
+  --color-secondary: #000;
+
+  --color-gray-dark-xx: #555;
+  --color-gray-dark-x: #6f6559;
+  --color-gray: #808080;
+  --color-gray-light-x: #9f9589;
+  --color-gray-light-xx: #bbb;
+  --color-gray-light-xxx: #eee;
+
+  --color-blue-light: #41c2ec;
+
+  --color-brown-light: #9f9589;
+  --color-brown: #7b6b54;
+
+  /* Indicator Colors */
+
+  --color-info: #00a5ff;
+  --color-success: #a5ff00;
+  --color-warning: #ffa500;
+  --color-error: #cc0000;
+
+  /* Font */
+  --font-family: Helvetica, sans-serif;
+
+  /* Z Index */
+  --z-background: 0;
+  --z-midground: 100;
+  --z-foreground: 200;
+}

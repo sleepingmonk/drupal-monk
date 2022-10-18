@@ -1,0 +1,27 @@
+.frame {
+  /* You can override the h/w values in your template/preprocess or JS */
+  /* to set the aspect ratio of fame in situ. Otherwise it defaults to 16:9. */
+  --h: 9; /* width */
+  --w: 16; /* height */
+  padding-bottom: calc(var(--h) / var(--w) * 100%);
+  position: relative;
+}
+
+.frame > * {
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.frame > img,
+.frame > video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

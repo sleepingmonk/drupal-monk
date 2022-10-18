@@ -1,0 +1,34 @@
+.switcher > * {
+  /* ↓ The space value; the first point on the modular scale */
+  --space: var(--s1);
+  /* ↓ Establish the flex context and allow wrapping */
+  display: flex;
+  flex-wrap: wrap;
+  /* ↓ Negate the margin to follow
+  (`* -1` makes the value negative) */
+  margin: calc((var(--space) / 2) * -1);
+}
+
+.switcher > * > * {
+  /* ↓ Allow growing, to take up available space */
+  flex-grow: 1;
+  /* ↓ Create the container-based breakpoint
+  (returns a negative or (large) positive value */
+  flex-basis: calc((var(--measure) - (100% - var(--space))) * 999);
+  /* ↓ Half margins meet to make the whole space value together */
+  margin: calc(var(--space) / 2);
+}
+
+.switcher--3 > * > :nth-last-child(n+4),
+.switcher--3 > * > :nth-last-child(n+4) ~ * {
+  /* Switch to a vertical configuration if
+  there are more than 3 child elements */
+  flex-basis: 100%;
+}
+
+.switcher--4 > * > :nth-last-child(n+5),
+.switcher--4 > * > :nth-last-child(n+5) ~ * {
+  /* Switch to a vertical configuration if
+  there are more than 4 child elements */
+  flex-basis: 100%;
+}

@@ -1,0 +1,22 @@
+.cluster {
+  /* ↓ Set the space as a variable */
+  --space: var(--s0);
+}
+
+.cluster > * {
+  /* ↓ Establish the flex context and allow wrapping */
+  display: flex;
+  flex-wrap: wrap;
+  /* ↓ Horizontal alignment */
+  justify-content: flex-start;
+  /* ↓ Vertical alignment */
+  align-items: center;
+  /* ↓ Negate the margin to follow
+  (`* -1` makes the value negative) */
+  margin: calc(var(--space) / 2 * -1);
+}
+
+.cluster > * > * {
+  /* ↓ Half margins meet to make the whole space value together */
+  margin: calc(var(--space) / 2);
+}

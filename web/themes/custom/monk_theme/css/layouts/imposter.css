@@ -1,0 +1,21 @@
+.imposter {
+  /* ↓ Choose the positioning element */
+  position: var(--positioning, absolute);
+  /* ↓ Position the top left corner in the center */
+  top: 50%;
+  left: 50%;
+  /* ↓ Reposition so the center of the element
+  is the center of the container */
+  transform: translate(-50%, -50%);
+}
+
+.imposter.contain {
+  /* ↓ Include a unit, or the calc function will be invalid */
+  --margin: var(--s0);
+  /* ↓ Provide scrollbars so content is not obscured */
+  overflow: auto;
+  /* ↓ Restrict the height and width, including optional
+  spacing/margin between the element and positioning container */
+  max-width: calc(100% - (var(--margin) * 2));
+  max-height: calc(100% - (var(--margin) * 2));
+}

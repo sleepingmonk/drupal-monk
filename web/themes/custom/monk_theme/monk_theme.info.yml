@@ -1,0 +1,20 @@
+name: Monk
+type: theme
+base theme: stark
+description: Algorithmic Layout, allowing the natural flow of content in a browser rather than forcing breakpoints and bloating code.
+package: Monk
+core_version_requirement: ^8 || ^9
+
+
+regions:
+  hat: 'Hat'
+  header: 'Header'
+  primary_menu: 'Primary menu'
+  secondary_menu: 'Secondary menu'
+  breadcrumb: 'Breadcrumb'
+  content: 'Content'
+  footer: 'Footer'
+  shoe: 'Shoe'
+
+libraries:
+  - monk_theme/global

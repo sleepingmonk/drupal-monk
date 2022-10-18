@@ -1,0 +1,21 @@
+.icon {
+  height: 0.75em;
+  /* ↓ Override the em value with `1cap`
+  where `cap` is supported */
+  height: 1cap;
+  width: 0.75em;
+  width: 1cap;
+}
+
+.with-icon {
+  /* ↓ Set the `inline-flex` context,
+  which eliminates the word space */
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.with-icon .icon {
+  /* ↓ Use the logical margin property
+  and a --space variable with a fallback */
+  margin-inline-end: var(--space, 0.5em);
+}

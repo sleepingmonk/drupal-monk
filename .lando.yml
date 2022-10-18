@@ -1,33 +1,34 @@
 # project_code: cmm, apb_d7, etc.
 name:
 
-# drupal8 | drupal7 | wordpress
-recipe: drupal8
+recipe: drupal9
 
 config:
   # default: web | lightning: docroot
   webroot: web
-
-  php: '7.3'
+  php: '7.4'
 
   # Optionally activate xdebug
   #
+  # Another option is to set this config in .lando.local.yml
   # If you are having trouble getting xdebug to work please see:
   # https://docs.devwithlando.io/services/php.html#using-xdebug
   # xdebug: true
 
 # Additional services and features.
 services:
-  # Theme.
-  node-cli:
-    type: node:10
+  # Frontend and Cypress Tests.
+  nodejs:
+    type: node
+    port: 8000
+    globals:
+      next-cli: latest
 
 # Custom Lando commands
 tooling:
   deploy:
     description: "lando deploy \tDeploys current branch to env. See README.md for workflow."
     cmd:
-      - node-cli: /app/scripts/theme.sh -a
       - appserver: /app/.localci/deploy.sh
   fresh:
     description: Run all the things to get local to a fresh state for this branch. (Checkout master branch first if starting a new feature.)
@@ -43,9 +44,23 @@ tooling:
       - node-cli: echo && echo "Building themes..." && /app/scripts/theme.sh -a && true
       - appserver: echo && echo "Resetting drupal..." && drush updb -y && drush cim -y && drush cr && true
   node:
-    service: node-cli
+    service: nodejs
   npm:
-    service: node-cli
+    service: nodejs
+  npx:
+    service: nodejs
+  phpcbf:
+    service: appserver
+    description: "lando phpcbf [path]\tCode Beautification. (Auto fix coding standards.)"
+    cmd: /app/vendor/bin/phpcbf --config-set installed_paths /app/vendor/drupal/coder/coder_sniffer && /app/vendor/bin/phpcbf -p --standard=Drupal,DrupalPractice --extensions=php,inc,profile,module,install,profile
+  phpcs:
+    service: appserver
+    description: "lando phpcs [path]\tCode Sniffer. (Check coding standards.)"
+    cmd: /app/vendor/bin/phpcs --config-set installed_paths /app/vendor/drupal/coder/coder_sniffer && /app/vendor/bin/phpcs -p --standard=Drupal,DrupalPractice --extensions=php,inc,profile,module,install,profile
+  phpmd:
+    service: appserver
+    description: "lando phpmd [path] [format] [ruleset]\tMess Detector."
+    cmd: /app/vendor/bin/phpmd
   reset:
     service: appserver
     description: "updb, cim, cr"
@@ -54,45 +69,16 @@ tooling:
       - drush cim -y
       - drush cr
       - drush uli
-  tb:
-    service: node-cli
-    description: "Theme: Build - `tb [theme_name]` Build poduction theme assets."
-    cmd:
-      - /app/scripts/theme.sh -b
-  tb:all:
-    service: node-cli
-    description: "Theme: Build All - `tb:all` Build all themes in the themes/custom directory."
-    cmd: /app/scripts/theme.sh -a
-  th:
+  testuser:
     service: appserver
-    description: "Help information for theme management."
-    cmd: /app/scripts/theme.sh -h
-  ti:
-    service: node-cli
-    description: "Theme: Install - `ti [theme_name]` (npm install)"
+    description: prepare drupal for testing
     cmd:
-      - /app/scripts/theme.sh -i
-      - /app/scripts/theme.sh -b
-  tw:
-    service: node-cli
-    description: "Theme: Watch `tw [theme_name]`"
-    cmd:
-      - /app/scripts/theme.sh -w
+      - drush ucrt test --mail=test-test@wayofbjj.com --password=changethis
+      - drush urol administrator test
   ts:
     service: appserver
-    description: "Theme: Sub - `ts [Theme Name]` Create subtheme from JCC Base"
+    description: "Theme: Sub - `ts [Theme Name]` Create subtheme from Monk Theme Base"
     cmd:
-      - drush --include=/app/web/themes/contrib/[base_theme] [base_theme]:create
-  # Docker is extra slow with xdebug enabled. Turn it on and off as needed without rebuilding.
-  # xdebug: https://github.com/lando/lando/issues/1668#issuecomment-507191275
-  xon:
-    service: appserver
-    description: Enable xdebug for apache.
-    cmd: "docker-php-ext-enable xdebug && /etc/init.d/apache2 reload"
-    user: root
-  xoff:
-    service: appserver
-    description: Disable xdebug for apache.
-    cmd: "rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && /etc/init.d/apache2 reload"
-    user: root
-
+      - drush --include=/app/web/themes/custom/monk_theme monk_theme:create
+env_file:
+  - .env

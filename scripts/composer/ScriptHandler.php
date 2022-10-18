@@ -16,51 +16,6 @@ use Webmozart\PathUtil\Path;
 
 class ScriptHandler {
 
-  public static function createRequiredFiles(Event $event) {
-    $fs = new Filesystem();
-    $drupalFinder = new DrupalFinder();
-    $drupalFinder->locateRoot(getcwd());
-    $drupalRoot = $drupalFinder->getDrupalRoot();
-
-    $dirs = [
-      'modules',
-      'profiles',
-      'themes',
-    ];
-
-    // Required for unit testing
-    foreach ($dirs as $dir) {
-      if (!$fs->exists($drupalRoot . '/'. $dir)) {
-        $fs->mkdir($drupalRoot . '/'. $dir);
-        $fs->touch($drupalRoot . '/'. $dir . '/.gitkeep');
-      }
-    }
-
-    // Prepare the settings file for installation
-    if (!$fs->exists($drupalRoot . '/sites/default/settings.php') and $fs->exists($drupalRoot . '/sites/default/default.settings.php')) {
-      $fs->copy($drupalRoot . '/sites/default/default.settings.php', $drupalRoot . '/sites/default/settings.php');
-      require_once $drupalRoot . '/core/includes/bootstrap.inc';
-      require_once $drupalRoot . '/core/includes/install.inc';
-      $settings['config_directories'] = [
-        CONFIG_SYNC_DIRECTORY => (object) [
-          'value' => Path::makeRelative($drupalFinder->getComposerRoot() . '/config', $drupalRoot),
-          'required' => TRUE,
-        ],
-      ];
-      drupal_rewrite_settings($settings, $drupalRoot . '/sites/default/settings.php');
-      $fs->chmod($drupalRoot . '/sites/default/settings.php', 0666);
-      $event->getIO()->write("Create a sites/default/settings.php file with chmod 0666");
-    }
-
-    // Create the files directory with chmod 0777
-    if (!$fs->exists($drupalRoot . '/sites/default/files')) {
-      $oldmask = umask(0);
-      $fs->mkdir($drupalRoot . '/sites/default/files', 0777);
-      umask($oldmask);
-      $event->getIO()->write("Create a sites/default/files directory with chmod 0777");
-    }
-  }
-
   /**
    * Checks if the installed version of Composer is compatible.
    *
@@ -131,20 +86,11 @@ class ScriptHandler {
     $drupalRoot = $drupalFinder->getDrupalRoot();
     $composerRoot = $drupalFinder->getComposerRoot();
 
-    // Don't create .lando.yml if one exists. Check 2 dirs up for scenarios
-    // that build into a tmp directory and move back into lando directory.
-    if (!$fs->exists($drupalRoot . '/../.lando.yml') && !$fs->exists($drupalRoot . '/../../.lando.yml')) {
-      $fs->rename($drupalRoot . '/../start.lando.yml', $drupalRoot . '/../.lando.yml');
-    }
-    else {
-      $fs->remove($drupalRoot . '/../start.lando.yml');
-    }
-
     // Move settings.local.php files if necessary.
     // Get site dirs.
     $finder->depth('== 0');
     $finder->directories()->in($drupalRoot . '/sites');
-    $copy_files = ['settings.local.php', 'services.local.yml', 'settings.php'];
+    $copy_files = ['settings.local.php', 'settings.php'];
 
     foreach ($finder as $dir) {
       $site = str_replace($drupalRoot . '/sites/', '', $dir);
@@ -155,12 +101,16 @@ class ScriptHandler {
           echo "This *SHOULD* get you started. Review $dir/$copy_file if you're having trouble.\n";
         }
       }
-      echo "\nYou *MAY* find a starter sql file here: 'scripts/local/$site/sql.start' that you can import directly if you need it.\n";
 
+      $fs->copy("$composerRoot/scripts/local/development.services.yml", "$dir/../development.services.yml");
+      echo "\ndevelopment.services.yml was copied to web/sites/ from scripts/local/$site\n";
+      echo "This *SHOULD* get you started. Review $dir/$copy_file if you're having trouble.\n";
+
+      echo "\nYou *MAY* find a starter sql file here: 'scripts/local/$site/sql.start' that you can import directly if you need it.\n";
     }
 
     echo "\n
-SUCCESS!  You have installed your Drupal 8 Project!
+SUCCESS!  You have installed your Project!
 See README.md for important information.\n
 ";
   }
