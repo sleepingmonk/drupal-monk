@@ -14,7 +14,7 @@ Add your author information for historical reference and professional context, a
  [repo]: https://github.com/<user>/<project>
  [host]: <host url>
  [ci]: <platform url>
- [backend]: https://drupal.org/8
+ [backend]: https://drupal.org/
  [frontend]: <drupal theme|headless repo>
 
  - Working Repo: [Github][repo]
@@ -25,19 +25,24 @@ Add your author information for historical reference and professional context, a
 
 ### Contents
 
- - [Local Development](#user-content-local-development)
- - [Module Management](#user-content-module-management)
-   - [Adding Contrib Modules](#user-content-adding-contrib-modules)
-   - [Updating Core](#user-content-updating-core)
-   - [Updating Contrib Modules](#user-content-updating-contrib-modules)
-   - [Removing Contrib Modules](#user-content-removing-contrib-modules)
-   - [Applying Patches](#user-content-applying-patches)
- - [Git Workflow and Deploying Code](#user-content-git-workflow-and-deploying-code)
-   - [Parallel Workflow](#user-content-git-workflow-and-deploying-code)
-   - [Testing and Approval](#user-content-testing-and-approval)
-   - [Automated Testing](#user-content-automated-testing)
-   - [Deploying Code](#user-content-deploying-code)
- - [Troubleshooting Local Environment](#user-content-troubleshooting-local-environment)
+- [Readme](#readme)
+  - [Meta](#meta)
+    - [Authors:](#authors)
+    - [Project Info:](#project-info)
+    - [Contents](#contents)
+  - [Local Development](#local-development)
+      - [Options:](#options)
+  - [Module Management](#module-management)
+    - [Adding Contrib Modules](#adding-contrib-modules)
+    - [Updating Core](#updating-core)
+    - [Updating Contrib Modules](#updating-contrib-modules)
+    - [Removing Contrib Modules](#removing-contrib-modules)
+    - [Applying Patches](#applying-patches)
+  - [Git Workflow and Deploying Code](#git-workflow-and-deploying-code)
+      - [Alternative Release Options](#alternative-release-options)
+    - [Testing and Approval](#testing-and-approval)
+    - [Automated Testing](#automated-testing)
+    - [Deploying Code](#deploying-code)
 
 ## Local Development
 

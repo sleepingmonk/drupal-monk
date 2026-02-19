@@ -1,29 +1,17 @@
 # project_code: cmm, apb_d7, etc.
 name:
 
-recipe: drupal9
+recipe: drupal11
 
 config:
-  # default: web | lightning: docroot
   webroot: web
-  php: '7.4'
+  php: '8.4'
 
-  # Optionally activate xdebug
-  #
-  # Another option is to set this config in .lando.local.yml
-  # If you are having trouble getting xdebug to work please see:
-  # https://docs.devwithlando.io/services/php.html#using-xdebug
-  # xdebug: true
-
-# Additional services and features.
 services:
-  # Frontend and Cypress Tests.
-  nodejs:
-    type: node
-    port: 8000
-    globals:
-      next-cli: latest
-
+  appserver:
+    xdebug: debug
+    config:
+      php: xdebug.php.ini
 # Custom Lando commands
 tooling:
   deploy:
@@ -43,12 +31,6 @@ tooling:
       - appserver: echo && echo "Running composer install..." && composer install && true
       - node-cli: echo && echo "Building themes..." && /app/scripts/theme.sh -a && true
       - appserver: echo && echo "Resetting drupal..." && drush updb -y && drush cim -y && drush cr && true
-  node:
-    service: nodejs
-  npm:
-    service: nodejs
-  npx:
-    service: nodejs
   phpcbf:
     service: appserver
     description: "lando phpcbf [path]\tCode Beautification. (Auto fix coding standards.)"
